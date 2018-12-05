@@ -1,4 +1,9 @@
-"#pg1" 
+#include "ns3/core-module.h"
+#include "ns3/network-module.h"
+#include "ns3/internet-module.h"
+#include "ns3/point-to-point-module.h"
+#include "ns3/applications-module.h"
+
 using namespace ns3;
 
 NS_LOG_COMPONENT_DEFINE("P2P-LAB1");
@@ -33,7 +38,7 @@ int main(int argc, char *argv[])
 
     Ptr<RateErrorModel> em = CreateObject<RateErrorModel>();
 
-    //Introduce error model to drop packets
+    
     em->SetAttribute("ErrorRate", DoubleValue(0.00002));
     devices.Get(1)->SetAttribute("ReceiveErrorModel", PointerValue(em));
 
@@ -42,7 +47,7 @@ int main(int argc, char *argv[])
     uint32_t payloadSize = 1448;
     OnOffHelper onoff(socketType, Ipv4Address::GetAny());
 
-    //Generate traffic
+    
     onoff.SetAttribute("OnTime", StringValue("ns3::ConstantRandomVariable[Constant=1]"));
 
     onoff.SetAttribute("OffTime", StringValue("ns3::ConstantRandomVariable[Constant=0]"));
@@ -53,14 +58,14 @@ int main(int argc, char *argv[])
 
     uint16_t port = 7;
 
-    //1. Install receiver (for packetsink) on node 2
+    
     Address localAddress1(InetSocketAddress(Ipv4Address::GetAny(), port));
     PacketSinkHelper packetSinkHelper1(socketType, localAddress1);
     ApplicationContainer sinkApp1 = packetSinkHelper1.Install(nodes.Get(2));
     sinkApp1.Start(Seconds(0.0));
     sinkApp1.Stop(Seconds(10));
 
-    //2. Install sender app on node 0
+    
     ApplicationContainer apps;
     AddressValue remoteAddress(InetSocketAddress(interfaces.GetAddress(1), port));
     onoff.SetAttribute("Remote", remoteAddress);
@@ -70,11 +75,11 @@ int main(int argc, char *argv[])
 
     Simulator::Stop(Seconds(10));
 
-    //Generate trace file
+    
     AsciiTraceHelper ascii;
     p2p1.EnableAsciiAll(ascii.CreateFileStream("P2ptracefile.tr"));
 
-    //Run the simulator
+ 
     Simulator::Run();
 
     Simulator::Destroy();
